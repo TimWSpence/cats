@@ -104,9 +104,9 @@ object KernelCheck {
 
   implicit val cogenDuration: Cogen[Duration] =
     Cogen[Long].contramap { d =>
-      if (d == Duration.Inf) 3896691548866406746L
-      else if (d == Duration.MinusInf) 1844151880988859955L
-      else if (d == Duration.Undefined) -7917359255778781894L
+      if (d == Duration.Inf) { println(s"inf $d"); 3896691548866406746L}
+      else if (d == Duration.MinusInf) { println(s"mins inf $d"); 1844151880988859955L }
+      else if (d == Duration.Undefined) { println(s"undefined $d"); -7917359255778781894L }
       else
         d.length * (d.unit match {
           case DAYS         => -6307593037248227856L
@@ -121,7 +121,7 @@ object KernelCheck {
 
   implicit val cogenFiniteDuration: Cogen[FiniteDuration] =
     Cogen[Long].contramap { d =>
-      d.length * (d.unit match {
+      val r = d.length * (d.unit match {
         case DAYS         => -6307593037248227856L
         case HOURS        => -3527447467459552709L
         case MINUTES      => 5955657079535371609L
@@ -130,6 +130,8 @@ object KernelCheck {
         case MICROSECONDS => -2965853209268633779L
         case NANOSECONDS  => 6128745701389500153L
       })
+      println(s"$d: $r")
+      r
     }
 }
 
@@ -144,6 +146,8 @@ class TestsConfig extends ScalaCheckSuite {
       .withMinSuccessfulTests(PropMinSuccessful)
       .withMaxSize(PropMaxSize)
       .withWorkers(PropWorkers)
+
+   override val scalaCheckInitialSeed = "hzeHOUHfb3_7x_2BxKaJnuLQt8g8rW9F_NIqhIjY5eA="
 }
 
 class Tests extends TestsConfig with DisciplineSuite {
@@ -162,267 +166,267 @@ class Tests extends TestsConfig with DisciplineSuite {
   {
     // needed for Cogen[Map[...]]
     implicit val ohe: Ordering[HasEq[Int]] = Ordering.by[HasEq[Int], Int](_.a)
-    checkAll("Eq[Map[String, HasEq[Int]]]", EqTests[Map[String, HasEq[Int]]].eqv)
-    checkAll("Eq[SortedMap[String, HasEq[Int]]]", EqTests[SortedMap[String, HasEq[Int]]].eqv)
+    // checkAll("Eq[Map[String, HasEq[Int]]]", EqTests[Map[String, HasEq[Int]]].eqv)
+    // checkAll("Eq[SortedMap[String, HasEq[Int]]]", EqTests[SortedMap[String, HasEq[Int]]].eqv)
   }
 
-  checkAll("Eq[List[HasEq[Int]]]", EqTests[List[HasEq[Int]]].eqv)
-  checkAll("Eq[Option[HasEq[Int]]]", EqTests[Option[HasEq[Int]]].eqv)
-  checkAll("Eq[Vector[HasEq[Int]]]", EqTests[Vector[HasEq[Int]]].eqv)
-  checkAll("Eq[Stream[HasEq[Int]]]", EqTests[Stream[HasEq[Int]]].eqv)
-  checkAll("Eq[Queue[HasEq[Int]]]", EqTests[Queue[HasEq[Int]]].eqv)
+  // checkAll("Eq[List[HasEq[Int]]]", EqTests[List[HasEq[Int]]].eqv)
+  // checkAll("Eq[Option[HasEq[Int]]]", EqTests[Option[HasEq[Int]]].eqv)
+  // checkAll("Eq[Vector[HasEq[Int]]]", EqTests[Vector[HasEq[Int]]].eqv)
+  // checkAll("Eq[Stream[HasEq[Int]]]", EqTests[Stream[HasEq[Int]]].eqv)
+  // checkAll("Eq[Queue[HasEq[Int]]]", EqTests[Queue[HasEq[Int]]].eqv)
 
-  checkAll("PartialOrder[Set[Int]]", PartialOrderTests[Set[Int]].partialOrder)
-  checkAll("PartialOrder.reverse(PartialOrder[Set[Int]])",
-           PartialOrderTests(PartialOrder.reverse(PartialOrder[Set[Int]])).partialOrder
-  )
-  checkAll(
-    "PartialOrder.reverse(PartialOrder.reverse(PartialOrder[Set[Int]]))",
-    PartialOrderTests(PartialOrder.reverse(PartialOrder.reverse(PartialOrder[Set[Int]]))).partialOrder
-  )
-  checkAll("PartialOrder[Option[HasPartialOrder[Int]]]", PartialOrderTests[Option[HasPartialOrder[Int]]].partialOrder)
-  checkAll("PartialOrder[List[HasPartialOrder[Int]]]", PartialOrderTests[List[HasPartialOrder[Int]]].partialOrder)
-  checkAll("PartialOrder[Vector[HasPartialOrder[Int]]]", PartialOrderTests[Vector[HasPartialOrder[Int]]].partialOrder)
-  checkAll("PartialOrder[Stream[HasPartialOrder[Int]]]", PartialOrderTests[Stream[HasPartialOrder[Int]]].partialOrder)
-  checkAll("PartialOrder[Queue[HasPartialOrder[Int]]]", PartialOrderTests[Queue[HasPartialOrder[Int]]].partialOrder)
-  checkAll("Semilattice.asMeetPartialOrder[Set[Int]]",
-           PartialOrderTests(Semilattice.asMeetPartialOrder[Set[Int]]).partialOrder
-  )
-  checkAll("Semilattice.asJoinPartialOrder[Set[Int]]",
-           PartialOrderTests(Semilattice.asJoinPartialOrder[Set[Int]]).partialOrder
-  )
+  // checkAll("PartialOrder[Set[Int]]", PartialOrderTests[Set[Int]].partialOrder)
+  // checkAll("PartialOrder.reverse(PartialOrder[Set[Int]])",
+  //          PartialOrderTests(PartialOrder.reverse(PartialOrder[Set[Int]])).partialOrder
+  // )
+  // checkAll(
+  //   "PartialOrder.reverse(PartialOrder.reverse(PartialOrder[Set[Int]]))",
+  //   PartialOrderTests(PartialOrder.reverse(PartialOrder.reverse(PartialOrder[Set[Int]]))).partialOrder
+  // )
+  // checkAll("PartialOrder[Option[HasPartialOrder[Int]]]", PartialOrderTests[Option[HasPartialOrder[Int]]].partialOrder)
+  // checkAll("PartialOrder[List[HasPartialOrder[Int]]]", PartialOrderTests[List[HasPartialOrder[Int]]].partialOrder)
+  // checkAll("PartialOrder[Vector[HasPartialOrder[Int]]]", PartialOrderTests[Vector[HasPartialOrder[Int]]].partialOrder)
+  // checkAll("PartialOrder[Stream[HasPartialOrder[Int]]]", PartialOrderTests[Stream[HasPartialOrder[Int]]].partialOrder)
+  // checkAll("PartialOrder[Queue[HasPartialOrder[Int]]]", PartialOrderTests[Queue[HasPartialOrder[Int]]].partialOrder)
+  // checkAll("Semilattice.asMeetPartialOrder[Set[Int]]",
+  //          PartialOrderTests(Semilattice.asMeetPartialOrder[Set[Int]]).partialOrder
+  // )
+  // checkAll("Semilattice.asJoinPartialOrder[Set[Int]]",
+  //          PartialOrderTests(Semilattice.asJoinPartialOrder[Set[Int]]).partialOrder
+  // )
 
-  checkAll("Order[String]", OrderTests[String].order)
-  checkAll("Order[Symbol]", OrderTests[Symbol].order)
-  checkAll("Order[Byte]", OrderTests[Byte].order)
-  checkAll("PartialOrder[BitSet]", PartialOrderTests[BitSet].partialOrder)
-  checkAll("Order[BigInt]", OrderTests[BigInt].order)
-  checkAll("Order[Duration]", OrderTests[Duration].order)
-  checkAll("Order[FiniteDuration]", OrderTests[FiniteDuration].order)
-  checkAll("Order[UUID]", OrderTests[UUID].order)
-  checkAll("Order[List[Int]]", OrderTests[List[Int]].order)
-  checkAll("Order[Option[String]]", OrderTests[Option[String]].order)
-  checkAll("Order[List[String]", OrderTests[List[String]].order)
-  checkAll("Order[Vector[Int]]", OrderTests[Vector[Int]].order)
-  checkAll("Order[Stream[Int]]", OrderTests[Stream[Int]].order)
-  checkAll("Order[Queue[Int]]", OrderTests[Queue[Int]].order)
-  checkAll("Order[SortedSet[String]", OrderTests[SortedSet[String]].order)
-  checkAll("fromOrdering[Int]", OrderTests(Order.fromOrdering[Int]).order)
-  checkAll("Order.reverse(Order[Int])", OrderTests(Order.reverse(Order[Int])).order)
-  checkAll("Order.reverse(Order.reverse(Order[Int]))", OrderTests(Order.reverse(Order.reverse(Order[Int]))).order)
-  checkAll("Order.fromLessThan[Int](_ < _)", OrderTests(Order.fromLessThan[Int](_ < _)).order)
+  // checkAll("Order[String]", OrderTests[String].order)
+  // checkAll("Order[Symbol]", OrderTests[Symbol].order)
+  // checkAll("Order[Byte]", OrderTests[Byte].order)
+  // checkAll("PartialOrder[BitSet]", PartialOrderTests[BitSet].partialOrder)
+  // checkAll("Order[BigInt]", OrderTests[BigInt].order)
+  // checkAll("Order[Duration]", OrderTests[Duration].order)
+  // checkAll("Order[FiniteDuration]", OrderTests[FiniteDuration].order)
+  // checkAll("Order[UUID]", OrderTests[UUID].order)
+  // checkAll("Order[List[Int]]", OrderTests[List[Int]].order)
+  // checkAll("Order[Option[String]]", OrderTests[Option[String]].order)
+  // checkAll("Order[List[String]", OrderTests[List[String]].order)
+  // checkAll("Order[Vector[Int]]", OrderTests[Vector[Int]].order)
+  // checkAll("Order[Stream[Int]]", OrderTests[Stream[Int]].order)
+  // checkAll("Order[Queue[Int]]", OrderTests[Queue[Int]].order)
+  // checkAll("Order[SortedSet[String]", OrderTests[SortedSet[String]].order)
+  // checkAll("fromOrdering[Int]", OrderTests(Order.fromOrdering[Int]).order)
+  // checkAll("Order.reverse(Order[Int])", OrderTests(Order.reverse(Order[Int])).order)
+  // checkAll("Order.reverse(Order.reverse(Order[Int]))", OrderTests(Order.reverse(Order.reverse(Order[Int]))).order)
+  // checkAll("Order.fromLessThan[Int](_ < _)", OrderTests(Order.fromLessThan[Int](_ < _)).order)
 
-  checkAll("LowerBounded[Duration]", LowerBoundedTests[Duration].lowerBounded)
-  checkAll("LowerBounded[FiniteDuration]", LowerBoundedTests[FiniteDuration].lowerBounded)
-  checkAll("LowerBounded[UUID]", LowerBoundedTests[UUID].lowerBounded)
-  checkAll("LowerBounded[String]", LowerBoundedTests[String].lowerBounded)
-  checkAll("LowerBounded[Symbol]", LowerBoundedTests[Symbol].lowerBounded)
+  // checkAll("LowerBounded[Duration]", LowerBoundedTests[Duration].lowerBounded)
+  // checkAll("LowerBounded[FiniteDuration]", LowerBoundedTests[FiniteDuration].lowerBounded)
+  // checkAll("LowerBounded[UUID]", LowerBoundedTests[UUID].lowerBounded)
+  // checkAll("LowerBounded[String]", LowerBoundedTests[String].lowerBounded)
+  // checkAll("LowerBounded[Symbol]", LowerBoundedTests[Symbol].lowerBounded)
 
-  checkAll("UpperBounded[Duration]", UpperBoundedTests[Duration].upperBounded)
-  checkAll("UpperBounded[FiniteDuration]", UpperBoundedTests[FiniteDuration].upperBounded)
-  checkAll("UpperBounded[UUID]", UpperBoundedTests[UUID].upperBounded)
+  // checkAll("UpperBounded[Duration]", UpperBoundedTests[Duration].upperBounded)
+  // checkAll("UpperBounded[FiniteDuration]", UpperBoundedTests[FiniteDuration].upperBounded)
+  // checkAll("UpperBounded[UUID]", UpperBoundedTests[UUID].upperBounded)
 
-  checkAll("BoundedEnumerable[Unit]", BoundedEnumerableTests[Unit].boundedEnumerable)
-  checkAll("BoundedEnumerable[Boolean]", BoundedEnumerableTests[Boolean].boundedEnumerable)
-  checkAll("BoundedEnumerable[Byte]", BoundedEnumerableTests[Byte].boundedEnumerable)
-  checkAll("BoundedEnumerable[Short]", BoundedEnumerableTests[Short].boundedEnumerable)
-  checkAll("BoundedEnumerable[Int]", BoundedEnumerableTests[Int].boundedEnumerable)
-  checkAll("BoundedEnumerable[Char]", BoundedEnumerableTests[Char].boundedEnumerable)
-  checkAll("BoundedEnumerable[Long]", BoundedEnumerableTests[Long].boundedEnumerable)
+  // checkAll("BoundedEnumerable[Unit]", BoundedEnumerableTests[Unit].boundedEnumerable)
+  // checkAll("BoundedEnumerable[Boolean]", BoundedEnumerableTests[Boolean].boundedEnumerable)
+  // checkAll("BoundedEnumerable[Byte]", BoundedEnumerableTests[Byte].boundedEnumerable)
+  // checkAll("BoundedEnumerable[Short]", BoundedEnumerableTests[Short].boundedEnumerable)
+  // checkAll("BoundedEnumerable[Int]", BoundedEnumerableTests[Int].boundedEnumerable)
+  // checkAll("BoundedEnumerable[Char]", BoundedEnumerableTests[Char].boundedEnumerable)
+  // checkAll("BoundedEnumerable[Long]", BoundedEnumerableTests[Long].boundedEnumerable)
 
-  checkAll("Monoid[String]", MonoidTests[String].monoid)
-  checkAll("Monoid[String]", SerializableTests.serializable(Monoid[String]))
-  checkAll("Monoid[Option[String]]", MonoidTests[Option[String]].monoid)
-  checkAll("Monoid[Option[String]]", SerializableTests.serializable(Monoid[Option[String]]))
-  checkAll("Monoid[List[Int]]", MonoidTests[List[Int]].monoid)
-  checkAll("Monoid[List[Int]]", SerializableTests.serializable(Monoid[List[Int]]))
-  checkAll("Monoid[Vector[Int]]", MonoidTests[Vector[Int]].monoid)
-  checkAll("Monoid[Vector[Int]]", SerializableTests.serializable(Monoid[Vector[Int]]))
-  checkAll("Monoid[Stream[Int]]", MonoidTests[Stream[Int]].monoid)
-  checkAll("Monoid[Stream[Int]]", SerializableTests.serializable(Monoid[Stream[Int]]))
-  checkAll("Monoid[List[String]]", MonoidTests[List[String]].monoid)
-  checkAll("Monoid[List[String]]", SerializableTests.serializable(Monoid[List[String]]))
-  checkAll("Monoid[Map[String, String]]", MonoidTests[Map[String, String]].monoid)
-  checkAll("Monoid[Map[String, String]]", SerializableTests.serializable(Monoid[Map[String, String]]))
-  checkAll("Monoid[SortedMap[String, String]]", MonoidTests[SortedMap[String, String]].monoid)
-  checkAll("Monoid[SortedMap[String, String]]", SerializableTests.serializable(Monoid[SortedMap[String, String]]))
-  checkAll("Monoid[Queue[Int]]", MonoidTests[Queue[Int]].monoid)
-  checkAll("Monoid[Queue[Int]]", SerializableTests.serializable(Monoid[Queue[Int]]))
+  // checkAll("Monoid[String]", MonoidTests[String].monoid)
+  // checkAll("Monoid[String]", SerializableTests.serializable(Monoid[String]))
+  // checkAll("Monoid[Option[String]]", MonoidTests[Option[String]].monoid)
+  // checkAll("Monoid[Option[String]]", SerializableTests.serializable(Monoid[Option[String]]))
+  // checkAll("Monoid[List[Int]]", MonoidTests[List[Int]].monoid)
+  // checkAll("Monoid[List[Int]]", SerializableTests.serializable(Monoid[List[Int]]))
+  // checkAll("Monoid[Vector[Int]]", MonoidTests[Vector[Int]].monoid)
+  // checkAll("Monoid[Vector[Int]]", SerializableTests.serializable(Monoid[Vector[Int]]))
+  // checkAll("Monoid[Stream[Int]]", MonoidTests[Stream[Int]].monoid)
+  // checkAll("Monoid[Stream[Int]]", SerializableTests.serializable(Monoid[Stream[Int]]))
+  // checkAll("Monoid[List[String]]", MonoidTests[List[String]].monoid)
+  // checkAll("Monoid[List[String]]", SerializableTests.serializable(Monoid[List[String]]))
+  // checkAll("Monoid[Map[String, String]]", MonoidTests[Map[String, String]].monoid)
+  // checkAll("Monoid[Map[String, String]]", SerializableTests.serializable(Monoid[Map[String, String]]))
+  // checkAll("Monoid[SortedMap[String, String]]", MonoidTests[SortedMap[String, String]].monoid)
+  // checkAll("Monoid[SortedMap[String, String]]", SerializableTests.serializable(Monoid[SortedMap[String, String]]))
+  // checkAll("Monoid[Queue[Int]]", MonoidTests[Queue[Int]].monoid)
+  // checkAll("Monoid[Queue[Int]]", SerializableTests.serializable(Monoid[Queue[Int]]))
 
-  checkAll("CommutativeMonoid[Option[Int]]", CommutativeMonoidTests[Option[Int]].commutativeMonoid)
-  checkAll("CommutativeMonoid[Option[Int]]", SerializableTests.serializable(CommutativeMonoid[Option[Int]]))
-  checkAll("CommutativeMonoid[Map[String, Int]]", CommutativeMonoidTests[Map[String, Int]].commutativeMonoid)
-  checkAll("CommutativeMonoid[Map[String, Int]]", SerializableTests.serializable(CommutativeMonoid[Map[String, Int]]))
-  checkAll("CommutativeMonoid[SortedMap[String, Int]]",
-           CommutativeMonoidTests[SortedMap[String, Int]].commutativeMonoid
-  )
-  checkAll("CommutativeMonoid[SortedMap[String, Int]]",
-           SerializableTests.serializable(CommutativeMonoid[SortedMap[String, Int]])
-  )
+  // checkAll("CommutativeMonoid[Option[Int]]", CommutativeMonoidTests[Option[Int]].commutativeMonoid)
+  // checkAll("CommutativeMonoid[Option[Int]]", SerializableTests.serializable(CommutativeMonoid[Option[Int]]))
+  // checkAll("CommutativeMonoid[Map[String, Int]]", CommutativeMonoidTests[Map[String, Int]].commutativeMonoid)
+  // checkAll("CommutativeMonoid[Map[String, Int]]", SerializableTests.serializable(CommutativeMonoid[Map[String, Int]]))
+  // checkAll("CommutativeMonoid[SortedMap[String, Int]]",
+  //          CommutativeMonoidTests[SortedMap[String, Int]].commutativeMonoid
+  // )
+  // checkAll("CommutativeMonoid[SortedMap[String, Int]]",
+  //          SerializableTests.serializable(CommutativeMonoid[SortedMap[String, Int]])
+  // )
 
-  checkAll("BoundedSemilattice[BitSet]", BoundedSemilatticeTests[BitSet].boundedSemilattice)
-  checkAll("BoundedSemilattice[BitSet]", SerializableTests.serializable(BoundedSemilattice[BitSet]))
-  checkAll("BoundedSemilattice[Set[Int]]", BoundedSemilatticeTests[Set[Int]].boundedSemilattice)
-  checkAll("BoundedSemilattice[Set[Int]]", SerializableTests.serializable(BoundedSemilattice[Set[Int]]))
-  checkAll("BoundedSemilattice[SortedSet[Int]]", BoundedSemilatticeTests[SortedSet[Int]].boundedSemilattice)
-  checkAll("BoundedSemilattice[SortedSet[Int]]", SerializableTests.serializable(BoundedSemilattice[SortedSet[Int]]))
+  // checkAll("BoundedSemilattice[BitSet]", BoundedSemilatticeTests[BitSet].boundedSemilattice)
+  // checkAll("BoundedSemilattice[BitSet]", SerializableTests.serializable(BoundedSemilattice[BitSet]))
+  // checkAll("BoundedSemilattice[Set[Int]]", BoundedSemilatticeTests[Set[Int]].boundedSemilattice)
+  // checkAll("BoundedSemilattice[Set[Int]]", SerializableTests.serializable(BoundedSemilattice[Set[Int]]))
+  // checkAll("BoundedSemilattice[SortedSet[Int]]", BoundedSemilatticeTests[SortedSet[Int]].boundedSemilattice)
+  // checkAll("BoundedSemilattice[SortedSet[Int]]", SerializableTests.serializable(BoundedSemilattice[SortedSet[Int]]))
 
-  checkAll("CommutativeGroup[Unit]", CommutativeGroupTests[Unit].commutativeGroup)
-  checkAll("CommutativeGroup[Unit]", SerializableTests.serializable(CommutativeGroup[Unit]))
-  checkAll("CommutativeGroup[Byte]", CommutativeGroupTests[Byte].commutativeGroup)
-  checkAll("CommutativeGroup[Byte]", SerializableTests.serializable(CommutativeGroup[Byte]))
-  checkAll("CommutativeGroup[Short]", CommutativeGroupTests[Short].commutativeGroup)
-  checkAll("CommutativeGroup[Short]", SerializableTests.serializable(CommutativeGroup[Short]))
-  checkAll("CommutativeGroup[Int]", CommutativeGroupTests[Int].commutativeGroup)
-  checkAll("CommutativeGroup[Int]", SerializableTests.serializable(CommutativeGroup[Int]))
-  checkAll("CommutativeGroup[Long]", CommutativeGroupTests[Long].commutativeGroup)
-  checkAll("CommutativeGroup[Long]", SerializableTests.serializable(CommutativeGroup[Long]))
-  // checkAll("CommutativeGroup[Float]", CommutativeGroupTests[Float].commutativeGroup) // approximately associative
-  // checkAll("CommutativeGroup[Double]", CommutativeGroupTests[Double].commutativeGroup) // approximately associative
-  checkAll("CommutativeGroup[BigInt]", CommutativeGroupTests[BigInt].commutativeGroup)
-  checkAll("CommutativeGroup[BigInt]", SerializableTests.serializable(CommutativeGroup[BigInt]))
-  checkAll("CommutativeGroup[Duration]", CommutativeGroupTests[Duration].commutativeGroup)
-  checkAll("CommutativeGroup[Duration]", SerializableTests.serializable(CommutativeGroup[Duration]))
-  checkAll("CommutativeGroup[FiniteDuration]", CommutativeGroupTests[FiniteDuration].commutativeGroup)
-  checkAll("CommutativeGroup[FiniteDuration]", SerializableTests.serializable(CommutativeGroup[FiniteDuration]))
+  // checkAll("CommutativeGroup[Unit]", CommutativeGroupTests[Unit].commutativeGroup)
+  // checkAll("CommutativeGroup[Unit]", SerializableTests.serializable(CommutativeGroup[Unit]))
+  // checkAll("CommutativeGroup[Byte]", CommutativeGroupTests[Byte].commutativeGroup)
+  // checkAll("CommutativeGroup[Byte]", SerializableTests.serializable(CommutativeGroup[Byte]))
+  // checkAll("CommutativeGroup[Short]", CommutativeGroupTests[Short].commutativeGroup)
+  // checkAll("CommutativeGroup[Short]", SerializableTests.serializable(CommutativeGroup[Short]))
+  // checkAll("CommutativeGroup[Int]", CommutativeGroupTests[Int].commutativeGroup)
+  // checkAll("CommutativeGroup[Int]", SerializableTests.serializable(CommutativeGroup[Int]))
+  // checkAll("CommutativeGroup[Long]", CommutativeGroupTests[Long].commutativeGroup)
+  // checkAll("CommutativeGroup[Long]", SerializableTests.serializable(CommutativeGroup[Long]))
+  // // checkAll("CommutativeGroup[Float]", CommutativeGroupTests[Float].commutativeGroup) // approximately associative
+  // // checkAll("CommutativeGroup[Double]", CommutativeGroupTests[Double].commutativeGroup) // approximately associative
+  // checkAll("CommutativeGroup[BigInt]", CommutativeGroupTests[BigInt].commutativeGroup)
+  // checkAll("CommutativeGroup[BigInt]", SerializableTests.serializable(CommutativeGroup[BigInt]))
+  // checkAll("CommutativeGroup[Duration]", CommutativeGroupTests[Duration].commutativeGroup)
+  // checkAll("CommutativeGroup[Duration]", SerializableTests.serializable(CommutativeGroup[Duration]))
+  // checkAll("CommutativeGroup[FiniteDuration]", CommutativeGroupTests[FiniteDuration].commutativeGroup)
+  // checkAll("CommutativeGroup[FiniteDuration]", SerializableTests.serializable(CommutativeGroup[FiniteDuration]))
 
-  checkAll("Hash[Unit]", HashTests[Unit].hash)
-  checkAll("Hash[Boolean]", HashTests[Boolean].hash)
-  checkAll("Hash[String]", HashTests[String].hash)
-  checkAll("Hash[Symbol]", HashTests[Symbol].hash)
-  checkAll("Hash[Byte]", HashTests[Byte].hash)
-  checkAll("Hash[Short]", HashTests[Short].hash)
-  checkAll("Hash[Char]", HashTests[Char].hash)
-  checkAll("Hash[Int]", HashTests[Int].hash)
-  checkAll("Hash[Duration]", HashTests[Duration].hash)
+  // checkAll("Hash[Unit]", HashTests[Unit].hash)
+  // checkAll("Hash[Boolean]", HashTests[Boolean].hash)
+  // checkAll("Hash[String]", HashTests[String].hash)
+  // checkAll("Hash[Symbol]", HashTests[Symbol].hash)
+  // checkAll("Hash[Byte]", HashTests[Byte].hash)
+  // checkAll("Hash[Short]", HashTests[Short].hash)
+  // checkAll("Hash[Char]", HashTests[Char].hash)
+  // checkAll("Hash[Int]", HashTests[Int].hash)
+  // checkAll("Hash[Duration]", HashTests[Duration].hash)
   checkAll("Hash[FiniteDuration]", HashTests[FiniteDuration].hash)
 
   // NOTE: Do not test for Float/Double/Long. These types'
   // `##` is different from `hashCode`. See [[scala.runtime.Statics.anyHash]].
   // checkAll("Hash[Float]" , HashTests[Float].hash)
   // checkAll("Hash[Double]" , HashTests[Double].hash)
-  checkAll("Hash[BitSet]", HashTests[BitSet].hash)
-  checkAll("Hash[BigDecimal]", HashTests[BigDecimal].hash)
-  checkAll("Hash[BigInt]", HashTests[BigInt].hash)
-  checkAll("Hash[UUID]", HashTests[UUID].hash)
-  checkAll("Hash[List[Int]]", HashTests[List[Int]].hash)
-  checkAll("Hash[Option[String]]", HashTests[Option[String]].hash)
-  checkAll("Hash[List[String]]", HashTests[List[String]].hash)
-  checkAll("Hash[Vector[Int]]", HashTests[Vector[Int]].hash)
-  checkAll("Hash[Stream[Int]]", HashTests[Stream[Int]].hash)
-  checkAll("Hash[Set[Int]]", HashTests[Set[Int]].hash)
-  checkAll("Hash[(Int, String)]", HashTests[(Int, String)].hash)
-  checkAll("Hash[Either[Int, String]]", HashTests[Either[Int, String]].hash)
-  checkAll("Hash[Map[Int, String]]", HashTests[Map[Int, String]].hash)
-  checkAll("Hash[SortedMap[Int, String]]", HashTests[SortedMap[Int, String]].hash)
-  checkAll("Hash[Queue[Int]", HashTests[Queue[Int]].hash)
+  // checkAll("Hash[BitSet]", HashTests[BitSet].hash)
+  // checkAll("Hash[BigDecimal]", HashTests[BigDecimal].hash)
+  // checkAll("Hash[BigInt]", HashTests[BigInt].hash)
+  // checkAll("Hash[UUID]", HashTests[UUID].hash)
+  // checkAll("Hash[List[Int]]", HashTests[List[Int]].hash)
+  // checkAll("Hash[Option[String]]", HashTests[Option[String]].hash)
+  // checkAll("Hash[List[String]]", HashTests[List[String]].hash)
+  // checkAll("Hash[Vector[Int]]", HashTests[Vector[Int]].hash)
+  // checkAll("Hash[Stream[Int]]", HashTests[Stream[Int]].hash)
+  // checkAll("Hash[Set[Int]]", HashTests[Set[Int]].hash)
+  // checkAll("Hash[(Int, String)]", HashTests[(Int, String)].hash)
+  // checkAll("Hash[Either[Int, String]]", HashTests[Either[Int, String]].hash)
+  // checkAll("Hash[Map[Int, String]]", HashTests[Map[Int, String]].hash)
+  // checkAll("Hash[SortedMap[Int, String]]", HashTests[SortedMap[Int, String]].hash)
+  // checkAll("Hash[Queue[Int]", HashTests[Queue[Int]].hash)
 
-  checkAll("Order[BigDecimal]", OrderTests[BigDecimal].order)
-  checkAll("CommutativeGroup[BigDecimal]", CommutativeGroupTests[BigDecimal].commutativeGroup)
-  checkAll("CommutativeGroup[BigDecimal]", SerializableTests.serializable(CommutativeGroup[BigDecimal]))
+  // checkAll("Order[BigDecimal]", OrderTests[BigDecimal].order)
+  // checkAll("CommutativeGroup[BigDecimal]", CommutativeGroupTests[BigDecimal].commutativeGroup)
+  // checkAll("CommutativeGroup[BigDecimal]", SerializableTests.serializable(CommutativeGroup[BigDecimal]))
 
-  test("CommutativeGroup[BigDecimal]'s combine should be associative for known problematic cases (#3303)") {
-    import java.math.MathContext
+  // test("CommutativeGroup[BigDecimal]'s combine should be associative for known problematic cases (#3303)") {
+  //   import java.math.MathContext
 
-    val one = BigDecimal("1", MathContext.DECIMAL32)
-    val small = BigDecimal("0.00001111111", MathContext.DECIMAL32)
-    val xs = one :: List.fill(10)(small)
-    val combineRight = xs.reduceRight(CommutativeGroup[BigDecimal].combine)
-    val combineLeft = xs.reduceLeft(CommutativeGroup[BigDecimal].combine)
+  //   val one = BigDecimal("1", MathContext.DECIMAL32)
+  //   val small = BigDecimal("0.00001111111", MathContext.DECIMAL32)
+  //   val xs = one :: List.fill(10)(small)
+  //   val combineRight = xs.reduceRight(CommutativeGroup[BigDecimal].combine)
+  //   val combineLeft = xs.reduceLeft(CommutativeGroup[BigDecimal].combine)
 
-    assert(Eq[BigDecimal].eqv(combineRight, combineLeft))
-  }
+  //   assert(Eq[BigDecimal].eqv(combineRight, combineLeft))
+  // }
 
-  test("CommutativeGroup[BigDecimal]'s combine should be commutative for known problematic cases (#3303)") {
-    import java.math.MathContext
+  // test("CommutativeGroup[BigDecimal]'s combine should be commutative for known problematic cases (#3303)") {
+  //   import java.math.MathContext
 
-    val one = BigDecimal("1")
-    val small = BigDecimal("1e-7", MathContext.DECIMAL32)
+  //   val one = BigDecimal("1")
+  //   val small = BigDecimal("1e-7", MathContext.DECIMAL32)
 
-    assert(
-      Eq[BigDecimal].eqv(CommutativeGroup[BigDecimal].combine(one, small),
-                         CommutativeGroup[BigDecimal].combine(small, one)
-      )
-    )
-  }
+  //   assert(
+  //     Eq[BigDecimal].eqv(CommutativeGroup[BigDecimal].combine(one, small),
+  //                        CommutativeGroup[BigDecimal].combine(small, one)
+  //     )
+  //   )
+  // }
 
-  checkAll("Band[(Int, Int)]", BandTests[(Int, Int)].band)
-  checkAll("Band[(Int, Int)]", SerializableTests.serializable(Band[(Int, Int)]))
+  // checkAll("Band[(Int, Int)]", BandTests[(Int, Int)].band)
+  // checkAll("Band[(Int, Int)]", SerializableTests.serializable(Band[(Int, Int)]))
 
-  checkAll("BoundedSemilattice[Unit]", BoundedSemilatticeTests[Unit].boundedSemilattice)
-  checkAll("BoundedSemilattice[Unit]", SerializableTests.serializable(BoundedSemilattice[Unit]))
+  // checkAll("BoundedSemilattice[Unit]", BoundedSemilatticeTests[Unit].boundedSemilattice)
+  // checkAll("BoundedSemilattice[Unit]", SerializableTests.serializable(BoundedSemilattice[Unit]))
 
-  // Comparison related
+  // // Comparison related
 
-  // Something that can give NaN for test
-  def subsetPartialOrder[A]: PartialOrder[Set[A]] =
-    new PartialOrder[Set[A]] {
-      def partialCompare(x: Set[A], y: Set[A]): Double =
-        if (x == y) 0.0
-        else if (x.subsetOf(y)) -1.0
-        else if (y.subsetOf(x)) 1.0
-        else Double.NaN
-    }
+  // // Something that can give NaN for test
+  // def subsetPartialOrder[A]: PartialOrder[Set[A]] =
+  //   new PartialOrder[Set[A]] {
+  //     def partialCompare(x: Set[A], y: Set[A]): Double =
+  //       if (x == y) 0.0
+  //       else if (x.subsetOf(y)) -1.0
+  //       else if (y.subsetOf(x)) 1.0
+  //       else Double.NaN
+  //   }
 
-  checkAll("subsetPartialOrder[Int]", PartialOrderTests(subsetPartialOrder[Int]).partialOrder)
+  // checkAll("subsetPartialOrder[Int]", PartialOrderTests(subsetPartialOrder[Int]).partialOrder)
 
-  {
-    implicit def subsetPartialOrdering[A]: PartialOrdering[Set[A]] =
-      new PartialOrdering[Set[A]] {
+  // {
+  //   implicit def subsetPartialOrdering[A]: PartialOrdering[Set[A]] =
+  //     new PartialOrdering[Set[A]] {
 
-        override def tryCompare(x: Set[A], y: Set[A]): Option[Int] =
-          if (x == y) Some(0)
-          else if (x.subsetOf(y)) Some(-1)
-          else if (y.subsetOf(x)) Some(1)
-          else None
+  //       override def tryCompare(x: Set[A], y: Set[A]): Option[Int] =
+  //         if (x == y) Some(0)
+  //         else if (x.subsetOf(y)) Some(-1)
+  //         else if (y.subsetOf(x)) Some(1)
+  //         else None
 
-        override def lteq(x: Set[A], y: Set[A]): Boolean = (x.subsetOf(y)) || (x == y)
-      }
-    checkAll("fromPartialOrdering[Int]", PartialOrderTests(PartialOrder.fromPartialOrdering[Set[Int]]).partialOrder)
-  }
+  //       override def lteq(x: Set[A], y: Set[A]): Boolean = (x.subsetOf(y)) || (x == y)
+  //     }
+  //   checkAll("fromPartialOrdering[Int]", PartialOrderTests(PartialOrder.fromPartialOrdering[Set[Int]]).partialOrder)
+  // }
 
-  implicit val arbitraryComparison: Arbitrary[Comparison] =
-    Arbitrary(Gen.oneOf(Comparison.GreaterThan, Comparison.EqualTo, Comparison.LessThan))
+  // implicit val arbitraryComparison: Arbitrary[Comparison] =
+  //   Arbitrary(Gen.oneOf(Comparison.GreaterThan, Comparison.EqualTo, Comparison.LessThan))
 
-  implicit val cogenComparison: Cogen[Comparison] =
-    Cogen[Int].contramap(_.toInt)
+  // implicit val cogenComparison: Cogen[Comparison] =
+  //   Cogen[Int].contramap(_.toInt)
 
-  checkAll("Eq[Comparison]", EqTests[Comparison].eqv)
+  // checkAll("Eq[Comparison]", EqTests[Comparison].eqv)
 
-  checkAll("Monoid[Comparison]", MonoidTests[Comparison].monoid)
+  // checkAll("Monoid[Comparison]", MonoidTests[Comparison].monoid)
 
-  test("comparison") {
-    val order = Order[Int]
-    val eqv = Eq[Comparison]
-    eqv.eqv(order.comparison(1, 0), Comparison.GreaterThan) &&
-    eqv.eqv(order.comparison(0, 0), Comparison.EqualTo) &&
-    eqv.eqv(order.comparison(-1, 0), Comparison.LessThan)
-  }
+  // test("comparison") {
+  //   val order = Order[Int]
+  //   val eqv = Eq[Comparison]
+  //   eqv.eqv(order.comparison(1, 0), Comparison.GreaterThan) &&
+  //   eqv.eqv(order.comparison(0, 0), Comparison.EqualTo) &&
+  //   eqv.eqv(order.comparison(-1, 0), Comparison.LessThan)
+  // }
 
-  test("partialComparison") {
-    val po = subsetPartialOrder[Int]
-    val eqv = Eq[Option[Comparison]]
-    eqv.eqv(po.partialComparison(Set(1), Set()), Some(Comparison.GreaterThan)) &&
-    eqv.eqv(po.partialComparison(Set(), Set()), Some(Comparison.EqualTo)) &&
-    eqv.eqv(po.partialComparison(Set(), Set(1)), Some(Comparison.LessThan)) &&
-    eqv.eqv(po.partialComparison(Set(1, 2), Set(2, 3)), None)
-  }
+  // test("partialComparison") {
+  //   val po = subsetPartialOrder[Int]
+  //   val eqv = Eq[Option[Comparison]]
+  //   eqv.eqv(po.partialComparison(Set(1), Set()), Some(Comparison.GreaterThan)) &&
+  //   eqv.eqv(po.partialComparison(Set(), Set()), Some(Comparison.EqualTo)) &&
+  //   eqv.eqv(po.partialComparison(Set(), Set(1)), Some(Comparison.LessThan)) &&
+  //   eqv.eqv(po.partialComparison(Set(1, 2), Set(2, 3)), None)
+  // }
 
-  property("sign . toInt . comparison = sign . compare") {
-    forAll { (i: Int, j: Int) =>
-      val found = Order[Int].comparison(i, j)
-      val expected = Order[Int].compare(i, j)
-      Eq[Int].eqv(found.toInt.sign, expected.sign)
-    }
-  }
+  // property("sign . toInt . comparison = sign . compare") {
+  //   forAll { (i: Int, j: Int) =>
+  //     val found = Order[Int].comparison(i, j)
+  //     val expected = Order[Int].compare(i, j)
+  //     Eq[Int].eqv(found.toInt.sign, expected.sign)
+  //   }
+  // }
 
-  property("sign . toDouble . partialComparison = sign . partialCompare") {
-    forAll { (x: Set[Int], y: Set[Int]) =>
-      val found = subsetPartialOrder[Int].partialComparison(x, y).map(_.toDouble.sign)
-      val expected = Some(subsetPartialOrder[Int].partialCompare(x, y)).filter(d => !d.isNaN).map(_.sign)
-      Eq[Option[Double]].eqv(found, expected)
-    }
-  }
+  // property("sign . toDouble . partialComparison = sign . partialCompare") {
+  //   forAll { (x: Set[Int], y: Set[Int]) =>
+  //     val found = subsetPartialOrder[Int].partialComparison(x, y).map(_.toDouble.sign)
+  //     val expected = Some(subsetPartialOrder[Int].partialCompare(x, y)).filter(d => !d.isNaN).map(_.sign)
+  //     Eq[Option[Double]].eqv(found, expected)
+  //   }
+  // }
 
   // esoteric machinery follows...
 
@@ -476,16 +480,16 @@ class Tests extends TestsConfig with DisciplineSuite {
     }
 
     implicit val monoidOrderN: Monoid[Order[N]] with Band[Order[N]] = Order.whenEqualMonoid[N]
-    checkAll("Monoid[Order[N]]", MonoidTests[Order[N]].monoid)
-    checkAll("Band[Order[N]]", BandTests[Order[N]].band)
+    // checkAll("Monoid[Order[N]]", MonoidTests[Order[N]].monoid)
+    // checkAll("Band[Order[N]]", BandTests[Order[N]].band)
 
     {
       implicit val bsEqN: BoundedSemilattice[Eq[N]] = Eq.allEqualBoundedSemilattice[N]
-      checkAll("BoundedSemilattice[Eq[N]]", BoundedSemilatticeTests[Eq[N]].boundedSemilattice)
+      // checkAll("BoundedSemilattice[Eq[N]]", BoundedSemilatticeTests[Eq[N]].boundedSemilattice)
     }
     {
       implicit val sEqN: Semilattice[Eq[N]] = Eq.anyEqualSemilattice[N]
-      checkAll("Semilattice[Eq[N]]", SemilatticeTests[Eq[N]].semilattice)
+      // checkAll("Semilattice[Eq[N]]", SemilatticeTests[Eq[N]].semilattice)
     }
   }
 
