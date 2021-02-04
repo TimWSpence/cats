@@ -130,7 +130,7 @@ object KernelCheck {
         case MICROSECONDS => -2965853209268633779L
         case NANOSECONDS  => 6128745701389500153L
       })
-      println(s"$d: $r")
+      // println(s"$d: $r")
       r
     }
 }
@@ -299,7 +299,7 @@ class Tests extends TestsConfig with DisciplineSuite {
   // checkAll("Hash[Char]", HashTests[Char].hash)
   // checkAll("Hash[Int]", HashTests[Int].hash)
   // checkAll("Hash[Duration]", HashTests[Duration].hash)
-  checkAll("Hash[FiniteDuration]", HashTests[FiniteDuration].hash)
+  checkAll("Eq[FiniteDuration]", EqTests[FiniteDuration].eqv)
 
   // NOTE: Do not test for Float/Double/Long. These types'
   // `##` is different from `hashCode`. See [[scala.runtime.Statics.anyHash]].

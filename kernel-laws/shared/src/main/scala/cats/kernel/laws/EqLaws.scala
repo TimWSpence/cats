@@ -13,8 +13,11 @@ trait EqLaws[A] {
     E.eqv(x, y) <-> E.eqv(y, x)
 
   def antiSymmetryEq(x: A, y: A, f: A => A): IsEq[Boolean] = {
-    println(s"fx: ${f(x)}")
-    println(s"fy: ${f(y)}")
+    println(s"x fx: $x ${f(x)}")
+    println(s"y fy: $y ${f(y)}")
+    println(s"!eqv: ${!E.eqv(x, y)}")
+    println(s"f eqv: ${E.eqv(f(x), f(y))}")
+    println(s"res: ${(!E.eqv(x, y) || E.eqv(f(x), f(y)))}")
     (!E.eqv(x, y) || E.eqv(f(x), f(y))) <-> true
 
   }
